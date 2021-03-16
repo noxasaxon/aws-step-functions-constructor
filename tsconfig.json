@@ -5,6 +5,8 @@
     "outDir": "out",
     "lib": ["es6"],
     "sourceMap": true,
+    // skipLibCheck prevents `error TS2304: Cannot find name 'SVGSVGElement'.`
+    "skipLibCheck": true,
     "rootDir": "src"
     /* Strict Type-Checking Option */
     // "strict": true,   /* enable all strict type-checking options */
