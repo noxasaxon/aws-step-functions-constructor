@@ -4,11 +4,38 @@ import * as _ from "lodash";
 import { parse, getSourceMap } from "./parse/parse";
 import { buildGraph } from "./graph";
 import { getStates } from "./stepFunction";
+import apb from './apb'
 
+/**
+ * Update File Content in the WebView Panel
+ * @remarks
+ * Parses the fileName for Step Function syntax, and rebuilds the visualization graph
+ * @param panel - current webview panel
+ * @param uri - path to Step Functions .json file
+ * @param fileName - path to Step Functions .json file
+ */
 export const postData = async (panel: vscode.WebviewPanel, uri: vscode.Uri, fileName: string) => {
   const stepFunction = await parse(uri, fileName);
-  const serializedGraph = buildGraph(stepFunction);
-  const states = getStates(stepFunction);
+
+  let serializedGraph = ""
+  let states = {}
+
+  // try {
+  //   console.log('attempt socless render')
+  //   const soclessStepFunction = new apb(stepFunction).StateMachine
+  //   serializedGraph = buildGraph(soclessStepFunction);
+  //   states = getStates(soclessStepFunction);
+  //   console.log('socless render')
+  // } catch {
+  //   serializedGraph = buildGraph(stepFunction);
+  //   states = getStates(stepFunction);
+  // }
+
+  console.log('attempt socless render')
+  const soclessStepFunction = new apb(stepFunction).StateMachine
+  serializedGraph = buildGraph(soclessStepFunction);
+  states = getStates(soclessStepFunction);
+  console.log('socless render')
 
   panel.webview.postMessage({
     command: "UPDATE",

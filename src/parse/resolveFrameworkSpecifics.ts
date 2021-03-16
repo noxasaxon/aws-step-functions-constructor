@@ -5,8 +5,13 @@ import * as R from "ramda";
 import { parseText } from "./parse";
 import { StepFunction } from "../stepFunction";
 
+
 function isASL(document: any) {
   return Boolean(document.StartAt && document.States);
+}
+
+function isSocless(document:any) {
+  return Boolean(document.Playbook && document.Comment && isASL(document))
 }
 
 function isSAM(document: any) {
@@ -23,6 +28,10 @@ function isServerlessSeparateDeclaration(document: any) {
 }
 
 export const resolveFrameworkSpecifics = (document: any, fileName): StepFunction => {
+  if (isSocless(document)) {
+    return document
+  }
+
   if (isASL(document)) {
     return {
       StartAt: document.StartAt,

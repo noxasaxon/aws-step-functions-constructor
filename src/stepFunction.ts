@@ -1,14 +1,16 @@
 export interface StepFunction {
   StartAt: string;
   States: Record<string, State>;
+  Playbook?: string;
+  Comment?: string;
 }
 
 interface BaseState {
   Type: string;
-  Next: string;
-  Catch: any[];
-  Retry: any[];
-  End: boolean;
+  Next?: string;
+  Catch?: any[];
+  Retry?: any[];
+  End?: boolean;
 }
 
 interface TaskState extends BaseState {
@@ -24,6 +26,10 @@ interface FailState extends BaseState {
 
 interface SucceedState extends BaseState {
   Type: "Succeed";
+}
+
+interface PassState extends BaseState {
+  Type: "Pass";
 }
 
 interface MapState extends BaseState {
@@ -66,7 +72,7 @@ interface ParallelState extends BaseState {
   Branches: StepFunction[];
 }
 
-export type State = TaskState | FailState | SucceedState | MapState | ChoiceState | ParallelState;
+export type State = TaskState | FailState | SucceedState | MapState | ChoiceState | ParallelState | PassState;
 
 export function stringifyChoiceOperator(operator: Operator) {
   const isLeaf = (operator: Operator) => Boolean(operator.Variable);
