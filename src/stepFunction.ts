@@ -32,6 +32,11 @@ interface PassState extends BaseState {
   Type: "Pass";
 }
 
+interface WaitState extends BaseState {
+  Type: "Wait";
+  Seconds: Number;
+}
+
 interface MapState extends BaseState {
   Type: "Map";
   Iterator: StepFunction;
@@ -72,7 +77,11 @@ interface ParallelState extends BaseState {
   Branches: StepFunction[];
 }
 
-export type State = TaskState | FailState | SucceedState | MapState | ChoiceState | ParallelState | PassState;
+interface InteractionState extends BaseState {
+  Type: "Interaction";
+}
+
+export type State = TaskState | FailState | SucceedState | MapState | ChoiceState | ParallelState | PassState | InteractionState | WaitState;
 
 export function stringifyChoiceOperator(operator: Operator) {
   const isLeaf = (operator: Operator) => Boolean(operator.Variable);

@@ -1,4 +1,4 @@
-import { StepFunction } from "./stepFunction";
+import { StepFunction } from "../stepFunction";
 const _ = require('lodash')
 
 // let Parameters = {}

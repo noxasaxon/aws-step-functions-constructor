@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import { parse, getSourceMap } from "./parse/parse";
 import { buildGraph } from "./graph";
 import { getStates } from "./stepFunction";
-import apb from './apb'
+import { apb } from './apb/apb'
 
 /**
  * Update File Content in the WebView Panel
@@ -16,23 +16,24 @@ import apb from './apb'
  */
 export const postData = async (panel: vscode.WebviewPanel, uri: vscode.Uri, fileName: string) => {
   const stepFunction = await parse(uri, fileName);
-
+  
   let serializedGraph = ""
   let states = {}
-
+  
   // try {
-  //   console.log('attempt socless render')
-  //   const soclessStepFunction = new apb(stepFunction).StateMachine
-  //   serializedGraph = buildGraph(soclessStepFunction);
-  //   states = getStates(soclessStepFunction);
-  //   console.log('socless render')
-  // } catch {
-  //   serializedGraph = buildGraph(stepFunction);
-  //   states = getStates(stepFunction);
-  // }
-
+    //   console.log('attempt socless render')
+    //   const soclessStepFunction = new apb(stepFunction).StateMachine
+    //   serializedGraph = buildGraph(soclessStepFunction);
+    //   states = getStates(soclessStepFunction);
+    //   console.log('socless render')
+    // } catch {
+      //   serializedGraph = buildGraph(stepFunction);
+      //   states = getStates(stepFunction);
+      // }
+      
   console.log('attempt socless render')
   const soclessStepFunction = new apb(stepFunction).StateMachine
+  console.log(soclessStepFunction)
   serializedGraph = buildGraph(soclessStepFunction);
   states = getStates(soclessStepFunction);
   console.log('socless render')
