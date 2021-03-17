@@ -16,6 +16,7 @@ interface BaseState {
 interface TaskState extends BaseState {
   Type: "Task";
   Resource: string;
+  Parameters?: Record<string, any>
 }
 
 interface FailState extends BaseState {
@@ -139,22 +140,49 @@ export function stringifyChoiceOperator(operator: Operator) {
 export function getStates(stepFunction: StepFunction) {
   const states = {};
   traverseStepFunction(stepFunction, (stateName, state) => {
-    states[stateName] = oneLevelDeepClone(state);
+    states[stateName] = formatStateForWebViewPopup(state);
   });
   return states;
 }
 
-function oneLevelDeepClone(object) {
-  return Object.keys(object).reduce((acc, key) => {
-    if (Array.isArray(object[key]) || typeof object[key] === "object") {
+function formatStateForWebViewPopup(state: State) {
+    return Object.keys(state).reduce((acc, key) => {
+    if (Array.isArray(state[key]) || typeof state[key] === "object") {
       return acc;
     }
-    const shortenedValue = `${object[key]}`.length > 25 ? `${object[key]}`.slice(0, 25) + "..." : object[key];
+    const shortenedValue = `${state[key]}`.length > 25 ? `${state[key]}`.slice(0, 25) + "..." : state[key];
 
     acc[key] = shortenedValue;
     return acc;
   }, {});
+  ///////////
+  // let formatted_object = {}
+  // for (const [key, value] of Object.entries(obj)) {
+
+  //   if (typeof value === "string") {
+  //     const shortenedValue = value.length > 25 ? value.slice(0, 25) + "..." : value;
+  //     formatted_object[key] = shortenedValue
+  //   } else if (Array.isArray(value)){
+  //     // remove arrays from object
+  //     continue
+  //   } else if (typeof value === "object") {
+  //     formatted_object = {...formatted_object, ...split_object_into_parent_keys(key, value)}
+  //     // formatted_object[key] = formatObjectForWebView(formatted_object, value)
+  //   }  else {
+  //     formatted_object[key] = value
+  //   }
+  // }
+  // return formatted_object
 }
+
+////////
+// function split_object_into_parent_keys(parent_key_name: string, child_object: object) {
+//   const new_object = {}
+//   for (const [key, value] of Object.entries(child_object)) {
+//     new_object[`${parent_key_name}\n${key}`] = value
+//   }
+//   return new_object
+// }
 
 // FIXME: What the hell is that?
 function traverseStepFunction(stepFunction: StepFunction, callback: (stateName: string, step: State) => void) {

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import { postData, throttledPostData, makeHandleReceiveMessage } from "./postData";
+import { postData, throttledPostData, makeHandleReceiveMessage, postDataWithAPB, throttledPostDataWithAPB } from "./postData";
 import { createWebviewPanel, renderTemplate } from "./webView";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -29,5 +29,31 @@ export function activate(context: vscode.ExtensionContext) {
     });
   });
 
+  const disposableWithAPB = vscode.commands.registerCommand("extension.showSoclessWithAPB", async () => {
+    const { uri, fileName } = vscode.window.activeTextEditor!.document;
+
+    const panel = createWebviewPanel(context);
+
+    postDataWithAPB(panel, uri, fileName);
+
+    vscode.workspace.onDidChangeTextDocument(async (event) => {
+      const isActiveDocumentEdit = event.document.uri.fsPath === uri.fsPath;
+      const hasSomethingChanged = event.contentChanges.length > 0;
+
+      if (isActiveDocumentEdit && hasSomethingChanged) {
+        throttledPostDataWithAPB(panel, uri, fileName);
+      }
+    }, null);
+
+    panel.webview.onDidReceiveMessage(makeHandleReceiveMessage(uri), null);
+
+    panel.onDidChangeViewState((event) => {
+      if (event.webviewPanel.visible) {
+        throttledPostDataWithAPB(panel, uri, fileName);
+      }
+    });
+  });
+
   context.subscriptions.push(disposable);
+  context.subscriptions.push(disposableWithAPB);
 }

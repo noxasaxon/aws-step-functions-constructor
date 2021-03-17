@@ -16,24 +16,28 @@ import { apb } from './apb/apb'
  */
 export const postData = async (panel: vscode.WebviewPanel, uri: vscode.Uri, fileName: string) => {
   const stepFunction = await parse(uri, fileName);
+
+  const serializedGraph = buildGraph(stepFunction);
+  const states = getStates(stepFunction);
+
+  panel.webview.postMessage({
+    command: "UPDATE",
+    data: {
+      serializedGraph,
+      states,
+    },
+  });
+};
+export const throttledPostData: any = _.throttle(postData, 200);
+
+export const postDataWithAPB = async (panel: vscode.WebviewPanel, uri: vscode.Uri, fileName: string) => {
+  const stepFunction = await parse(uri, fileName);
   
   let serializedGraph = ""
   let states = {}
   
-  // try {
-    //   console.log('attempt socless render')
-    //   const soclessStepFunction = new apb(stepFunction).StateMachine
-    //   serializedGraph = buildGraph(soclessStepFunction);
-    //   states = getStates(soclessStepFunction);
-    //   console.log('socless render')
-    // } catch {
-      //   serializedGraph = buildGraph(stepFunction);
-      //   states = getStates(stepFunction);
-      // }
-      
   console.log('attempt socless render')
   const soclessStepFunction = new apb(stepFunction).StateMachine
-  console.log(soclessStepFunction)
   serializedGraph = buildGraph(soclessStepFunction);
   states = getStates(soclessStepFunction);
   console.log('socless render')
@@ -46,7 +50,7 @@ export const postData = async (panel: vscode.WebviewPanel, uri: vscode.Uri, file
     },
   });
 };
-export const throttledPostData: any = _.throttle(postData, 200);
+export const throttledPostDataWithAPB: any = _.throttle(postDataWithAPB, 200);
 
 export const makeHandleReceiveMessage = (uri: vscode.Uri) => async (message) => {
   switch (message.command) {

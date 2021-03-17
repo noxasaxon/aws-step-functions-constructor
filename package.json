@@ -16,7 +16,8 @@
     "Visualization"
   ],
   "activationEvents": [
-    "onCommand:extension.showStepFunction"
+    "onCommand:extension.showStepFunction",
+    "onCommand:extension.showSoclessWithAPB"
   ],
   "main": "./dist/extension",
   "contributes": {
@@ -24,6 +25,10 @@
       {
         "command": "extension.showStepFunction",
         "title": "Show step function"
+      },
+      {
+        "command": "extension.showSoclessWithAPB",
+        "title": "Visualize SOCless CloudFormation after APB"
       }
     ]
   },
